@@ -1,0 +1,31 @@
+# Android / Gradle
+*.iml
+.gradle/
+local.properties
+.idea/
+.DS_Store
+build/
+captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.aab
+*.ap_
+*.dex
+
+# Kotlin
+.kotlin/
+
+# Keystores & secrets
+*.jks
+*.keystore
+secrets.properties
+google-services.json
+
+# IDE
+*.iws
+*.ipr
+out/
+
+# OS
+Thumbs.db
