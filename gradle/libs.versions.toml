@@ -9,6 +9,7 @@ junit = "4.13.2"
 androidxJunit = "1.2.1"
 espressoCore = "3.6.1"
 spotless = "6.25.0"
+screenshot = "0.0.1-alpha09"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -31,3 +32,4 @@ android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
+compose-screenshot = { id = "com.android.compose.screenshot", version.ref = "screenshot" }
