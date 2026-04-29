@@ -35,6 +35,7 @@ fun select(
         val track = pickTrack(unused, targetBpm, remaining, random) ?: break
         selected.add(SelectedTrack(track, cursor))
         unused.remove(track)
+        if (track.durationSec <= 0) break
         cursor += track.durationSec
     }
 
@@ -70,7 +71,7 @@ private fun pickTrack(
         val matches = unused.filter { bpmDistance(it.bpm, targetBpm) <= tolerance }
         if (matches.isNotEmpty()) return pickBest(matches, remaining, random)
     }
-    val nearest = unused.minBy { bpmDistance(it.bpm, targetBpm) }
+    val nearest = unused.minByOrNull { bpmDistance(it.bpm, targetBpm) } ?: return null
     return pickBest(listOf(nearest), remaining, random)
 }
 

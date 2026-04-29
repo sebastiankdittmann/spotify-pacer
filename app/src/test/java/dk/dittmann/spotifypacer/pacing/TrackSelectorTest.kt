@@ -101,6 +101,34 @@ class TrackSelectorTest {
         )
     }
 
+    // ── Time-budget preference ────────────────────────────────────────────────
+
+    @Test
+    fun `time-budget preference - fitting track chosen over non-fitting when both match BPM`() {
+        // 90-second curve. At cursor=0, remaining=90.
+        // "long" (120 s) does not fit; "short" (30 s) does.
+        // Both are at the target BPM, so pickBest should always choose the fitting one.
+        val curve = constantCurve(90, 160)
+        val pool =
+            listOf(track("long", 160.0, durationSec = 120), track("short", 160.0, durationSec = 30))
+        repeat(20) { seed ->
+            val result = select(curve, pool, Random(seed))
+            assertEquals(
+                "seed=$seed: fitting track should be picked first",
+                "short",
+                result.tracks.first().track.id,
+            )
+        }
+    }
+
+    @Test
+    fun `zero duration track - does not cause infinite loop`() {
+        val curve = constantCurve(60, 160)
+        val pool = listOf(track("zero", 160.0, durationSec = 0))
+        val result = select(curve, pool)
+        assertEquals(1, result.tracks.size)
+    }
+
     // ── Small-pool degradation ────────────────────────────────────────────────
 
     @Test
