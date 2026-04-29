@@ -45,7 +45,6 @@ Apply these in every suggestion. They override any stylistic default.
 - Small, focused PRs. One concern per PR.
 - Commit/PR titles: `feat:`, `fix:`, `chore:`, `docs:`, `test:`, `refactor:`. **No scope in parentheses** (`feat(auth):` is not used).
 - Branch prefixes: `feat/`, `fix/`, `chore/`, `poc/`.
-- Reference the Jira ticket in PR descriptions. Project key: **LRMP**. If no ticket exists, flag it.
 - Follow `.github/PULL_REQUEST_TEMPLATE.md` if present.
 - Never `--no-verify`, never force-push `main`.
 
