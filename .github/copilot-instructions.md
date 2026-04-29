@@ -40,6 +40,37 @@ Apply these in every suggestion. They override any stylistic default.
 - `audio-features` may be deprecated for new app registrations — flag if a suggestion depends on it without a fallback plan.
 - Cache audio-features locally; Spotify rate-limits aggressively.
 
+## UI behavior tests
+
+Any PR that adds or changes a Compose UI **must** include or update a UI behavior test. Tests live in `app/src/test/java/dk/dittmann/spotifypacer/...` and run on the JVM via Robolectric — no emulator needed, no sandbox setup beyond what's already configured.
+
+**Pattern:**
+
+```kotlin
+@RunWith(RobolectricTestRunner::class)
+class LoginScreenTest {
+    @get:Rule val composeRule = createAndroidComposeRule<ComponentActivity>()
+
+    @Test
+    fun tapping_sign_in_shows_loading() {
+        composeRule.setContent { LoginScreen(state = LoginState.Idle, onSignIn = {}) }
+        composeRule.onNodeWithText("Sign in with Spotify").performClick()
+        // assert state transition
+    }
+}
+```
+
+**What to test:**
+- Each visible state the screen can render (idle/loading/error/success) — one test each.
+- Every interactive affordance (button, input) — assert the state change it causes.
+- Navigation triggers (e.g. button tap emits a nav event) — assert via a test double for the callback.
+
+**What NOT to test here:**
+- Pure logic already covered by unit tests (curve math, selection algorithm). Don't duplicate.
+- Integration against real Spotify — use fakes/mocks.
+
+**CI runs `gradle testDebugUnitTest` on every PR.** Failing UI behavior tests block merge.
+
 ## Screenshots for UI PRs
 
 Any PR that adds or changes a Compose UI **must** include screenshots in the PR description. The repo is wired for headless, JVM-rendered screenshots via the `com.android.compose.screenshot` plugin — no emulator needed.

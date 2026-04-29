@@ -10,6 +10,7 @@ androidxJunit = "1.2.1"
 espressoCore = "3.6.1"
 spotless = "6.25.0"
 screenshot = "0.0.1-alpha09"
+robolectric = "4.14.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -26,6 +27,7 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidxJunit" }
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
