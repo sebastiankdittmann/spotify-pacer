@@ -24,14 +24,15 @@ fun generateCurve(
     if (times.last() != totalSeconds) times.add(totalSeconds)
 
     return times.map { t ->
-        val bpm = when (strategy) {
-            PaceStrategy.Constant -> (b0 + b1) / 2.0
-            PaceStrategy.LinearRamp -> b0 + (b1 - b0) * (t / T)
-            is PaceStrategy.DelayedExponential -> {
-                val k = strategy.k
-                b0 + (b1 - b0) * (exp(k * t / T) - 1) / (exp(k) - 1)
+        val bpm =
+            when (strategy) {
+                PaceStrategy.Constant -> (b0 + b1) / 2.0
+                PaceStrategy.LinearRamp -> b0 + (b1 - b0) * (t / T)
+                is PaceStrategy.DelayedExponential -> {
+                    val k = strategy.k
+                    b0 + (b1 - b0) * (exp(k * t / T) - 1) / (exp(k) - 1)
+                }
             }
-        }
         BpmSample(t, bpm)
     }
 }

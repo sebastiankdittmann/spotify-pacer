@@ -55,7 +55,10 @@ class PaceCurveTest {
         val curve = generateCurve(PaceStrategy.DelayedExponential(k = 4.0), 120, 150, 170, 60)
         val expMid = curve.first { it.timeSec == 60 }.bpm
         val linearMid = (150.0 + 170.0) / 2.0
-        assertTrue("Delayed exponential mid ($expMid) should be below linear mid ($linearMid)", expMid < linearMid)
+        assertTrue(
+            "Delayed exponential mid ($expMid) should be below linear mid ($linearMid)",
+            expMid < linearMid,
+        )
     }
 
     // ── Input validation ─────────────────────────────────────────────────────
