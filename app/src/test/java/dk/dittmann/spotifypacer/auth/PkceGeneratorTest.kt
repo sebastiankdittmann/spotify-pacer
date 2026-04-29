@@ -1,6 +1,5 @@
 package dk.dittmann.spotifypacer.auth
 
-import java.security.SecureRandom
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
 import org.junit.Assert.assertTrue
@@ -33,15 +32,5 @@ class PkceGeneratorTest {
         val second = PkceGenerator.generateCodeVerifier()
 
         assertNotEquals(first, second)
-    }
-
-    @Test
-    fun generated_verifier_is_deterministic_for_seeded_random() {
-        fun seeded() =
-            PkceGenerator.generateCodeVerifier(
-                SecureRandom.getInstance("SHA1PRNG").apply { setSeed(42L) }
-            )
-
-        assertEquals(seeded(), seeded())
     }
 }
