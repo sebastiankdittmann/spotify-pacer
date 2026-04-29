@@ -19,9 +19,9 @@ Generate a Spotify playlist whose track tempo (BPM) matches a user-selected paci
 ## Functional requirements
 
 ### Auth
-- **F-A1**: Use Spotify Authorization Code Flow with PKCE. The app must not require users to paste tokens or register their own app credentials.
-- **F-A2**: Store refresh token securely on device (EncryptedSharedPreferences or Android Keystore-backed).
-- **F-A3**: Sign-out clears stored tokens.
+- **F-A1** *(implemented, [#2](https://github.com/sebastiankdittmann/spotify-pacer/issues/2))*: Use Spotify Authorization Code Flow with PKCE. The app must not require users to paste tokens or register their own app credentials.
+- **F-A2** *(implemented, [#2](https://github.com/sebastiankdittmann/spotify-pacer/issues/2))*: Store refresh token securely on device (EncryptedSharedPreferences or Android Keystore-backed).
+- **F-A3** *(implemented, [#2](https://github.com/sebastiankdittmann/spotify-pacer/issues/2))*: Sign-out clears stored tokens.
 
 ### Input
 - **F-I1**: User inputs distance (km, with decimal) and target time (hh:mm:ss or mm:ss).
@@ -29,14 +29,14 @@ Generate a Spotify playlist whose track tempo (BPM) matches a user-selected paci
 - **F-I3**: Sensible validation: positive distance, positive time, resulting average pace in a plausible running range (warn outside 3:00–10:00 min/km).
 
 ### Pacing engine
-- **F-P1**: Convert (distance, time, strategy) into a BPM-over-time curve covering the full run duration.
+- **F-P1** *(implemented, [#4](https://github.com/sebastiankdittmann/spotify-pacer/issues/4))*: Convert (distance, time, strategy) into a BPM-over-time curve covering the full run duration.
 - **F-P2**: Total playlist duration should be within ±30 s of the target time.
-- **F-P3**: Strategy definitions in [DESIGN.md](DESIGN.md#pace-curves).
+- **F-P3** *(implemented, [#4](https://github.com/sebastiankdittmann/spotify-pacer/issues/4))*: Strategy definitions in [DESIGN.md](DESIGN.md#pace-curves).
 
 ### Track selection
 - **F-T1**: Source candidate tracks from the user's liked songs and playlists.
 - **F-T2**: Fetch `audio-features` for candidates to get `tempo` (BPM).
-- **F-T3**: Select tracks greedily, minute by minute, whose BPM best matches the curve at that moment, subject to:
+- **F-T3** *(implemented, [#5](https://github.com/sebastiankdittmann/spotify-pacer/issues/5))*: Select tracks greedily, minute by minute, whose BPM best matches the curve at that moment, subject to:
   - No repeats within a playlist.
   - Prefer tracks within ±3 BPM of the target at that point; widen tolerance if no match.
   - Allow half/double-tempo substitution (a 90 BPM track can stand in for 180 BPM and vice versa).

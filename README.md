@@ -8,7 +8,24 @@ Login uses Spotify's **Authorization Code Flow with PKCE** so the app acts on be
 
 ## Status
 
-Pre-alpha. Android project scaffolded, CI green, no feature code yet. Work tracked under the [v0.1 MVP milestone](https://github.com/sebastiankdittmann/spotify-pacer/milestones).
+Pre-alpha, headless. The non-UI pieces of the MVP are in place; the Compose screens that wire them together are next. Work tracked under the [v0.1 MVP milestone](https://github.com/sebastiankdittmann/spotify-pacer/milestones).
+
+- ✅ Spotify **PKCE auth** + encrypted refresh-token storage ([#2](https://github.com/sebastiankdittmann/spotify-pacer/issues/2))
+- ✅ **Pace curve** generator — constant, linear, delayed-exponential ([#4](https://github.com/sebastiankdittmann/spotify-pacer/issues/4))
+- ✅ **Track selector** — greedy minute-by-minute match with half/double-tempo substitution and widening tolerance ([#5](https://github.com/sebastiankdittmann/spotify-pacer/issues/5))
+- ⏳ Spotify **Web API** client — `/me`, liked tracks, audio-features, playlist create/add ([#3](https://github.com/sebastiankdittmann/spotify-pacer/issues/3))
+- ⏳ **UI screens** — login, run setup, preview ([#6](https://github.com/sebastiankdittmann/spotify-pacer/issues/6), [#7](https://github.com/sebastiankdittmann/spotify-pacer/issues/7), [#8](https://github.com/sebastiankdittmann/spotify-pacer/issues/8))
+- ⏳ Save playlist to account ([#9](https://github.com/sebastiankdittmann/spotify-pacer/issues/9))
+
+## Modules
+
+All under `app/src/main/java/dk/dittmann/spotifypacer/`.
+
+| Package | What's in it |
+|---|---|
+| `auth/` | `PkceGenerator`, `AuthService`, `SpotifyAuthApi` (Retrofit), `TokenStore` (+ `EncryptedTokenStore`), `AuthRedirectActivity`, `AuthLauncher` |
+| `pacing/` | `PaceStrategy`, `generateCurve(...)`, `TrackSelector` |
+| *(root)* | `SpotifyPacerApplication` (owns the lazy `AuthService`), `MainActivity` (placeholder) |
 
 ## Stack
 
@@ -29,7 +46,7 @@ Pre-alpha. Android project scaffolded, CI green, no feature code yet. Work track
 
 - **Android Studio Ladybug** (2024.2.1) or newer — needed for the Compose screenshot-test plugin. [Download](https://developer.android.com/studio).
 - **JDK 17** — bundled with Android Studio; Gradle uses it automatically.
-- A Spotify account (free works) plus a **Spotify Developer app** — register at <https://developer.spotify.com/dashboard> when you start on the auth issue. Redirect URI: `spotifypacer://callback`.
+- A Spotify account (free works) plus a **Spotify Developer app** — register at <https://developer.spotify.com/dashboard>. Redirect URI: `spotifypacer://callback`. The client ID goes in `local.properties` (see [Getting started](#getting-started)).
 
 ## Getting started
 
@@ -40,11 +57,11 @@ Pre-alpha. Android project scaffolded, CI green, no feature code yet. Work track
    ```
 2. Open the project folder in Android Studio.
 3. Wait for **Gradle Sync** to finish. First sync downloads AGP, Kotlin, Compose, and the Android SDK components. The Gradle wrapper is pinned to 8.11.1 and committed.
-4. When the auth code lands ([issue #2](https://github.com/sebastiankdittmann/spotify-pacer/issues/2)), create `local.properties` in the project root:
+4. Add your Spotify client ID to `local.properties` in the project root (create the file if it doesn't exist; keep any existing entries like `sdk.dir`):
    ```properties
-   SPOTIFY_CLIENT_ID=paste_your_public_client_id_here
+   spotify.clientId=paste_your_public_client_id_here
    ```
-   `local.properties` is gitignored. There is no client secret — PKCE is used.
+   Register a Spotify Developer app at <https://developer.spotify.com/dashboard> with redirect URI `spotifypacer://callback`. `local.properties` is gitignored. There is no client secret — PKCE is used. The app reads `BuildConfig.SPOTIFY_CLIENT_ID` from this file (or the `SPOTIFY_CLIENT_ID` env var).
 
 ## Running the app
 
