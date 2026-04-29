@@ -39,7 +39,7 @@ Pre-alpha. Android project scaffolded, CI green, no feature code yet. Work track
    cd spotify-pacer
    ```
 2. Open the project folder in Android Studio.
-3. Wait for **Gradle Sync** to finish. First sync downloads AGP, Kotlin, Compose, and the Android SDK components, and generates the Gradle wrapper (`gradlew`, `gradle/wrapper/gradle-wrapper.jar`).
+3. Wait for **Gradle Sync** to finish. First sync downloads AGP, Kotlin, Compose, and the Android SDK components. The Gradle wrapper is pinned to 8.11.1 and committed.
 4. When the auth code lands ([issue #2](https://github.com/sebastiankdittmann/spotify-pacer/issues/2)), create `local.properties` in the project root:
    ```properties
    SPOTIFY_CLIENT_ID=paste_your_public_client_id_here
@@ -70,7 +70,7 @@ Pre-alpha. Android project scaffolded, CI green, no feature code yet. Work track
 
 ### From the command line
 
-After Android Studio has generated the Gradle wrapper at least once:
+With JDK 17 on the path (matches CI):
 
 | Command | What it does |
 |---|---|
