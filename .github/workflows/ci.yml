@@ -34,7 +34,13 @@ jobs:
         run: gradle testDebugUnitTest
 
       - name: Validate preview screenshots
-        run: gradle validateDebugScreenshotTest
+        run: |
+          if [ -d app/src/debug/screenshotTest/reference ]; then
+            gradle validateDebugScreenshotTest
+          else
+            echo "No committed screenshot references yet — skipping validation."
+            echo "Seed them with './gradlew :app:updateDebugScreenshotTest' and commit the PNGs."
+          fi
 
       - name: Assemble debug
         run: gradle assembleDebug

@@ -21,4 +21,5 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "spotify-pacer"
+
 include(":app")
