@@ -38,6 +38,15 @@ Review the diff against the principles below. Comment only when you have a concr
 - **Dependence on `audio-features`** — deprecated for newer app registrations; flag if the PR adds a new code path relying on it with no fallback.
 - **Unbounded Spotify calls** — no caching, no pagination, no rate-limit handling on loops that hit the API per track.
 
+## UI PR behavior tests
+
+- **Missing UI test on a UI PR** — a PR that adds or changes a Compose composable must include at least one Robolectric-hosted behavior test under `app/src/test/java/...`. If absent, flag and link to `.github/copilot-instructions.md#ui-behavior-tests`.
+- **State transitions untested** — if the screen has multiple states (`Idle | Loading | Error | Success`), flag if only one is covered.
+- **Interactive element without an assertion** — button or input wired in the PR but not exercised by a test. Flag.
+- **Test asserts implementation, not behavior** — e.g. checking a specific Modifier chain instead of a visible effect (text shown, state changed). Suggest behavioral assertion.
+- **Shared fixtures duplicated inline** — if three tests copy-paste the same setup, suggest a small helper.
+- **Emulator/instrumentation test added** — flag: the project targets Robolectric unit tests only (`test/` source set). If a real emulator flow is needed, open a discussion first.
+
 ## UI PR screenshots
 
 - **Missing screenshots on a UI PR** — a PR that adds or changes a Compose composable must embed `@Preview` screenshots in the description. If absent, flag and link to `.github/copilot-instructions.md#screenshots-for-ui-prs`.
