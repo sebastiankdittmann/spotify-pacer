@@ -13,7 +13,7 @@ Pre-alpha, headless. The non-UI pieces of the MVP are in place; the Compose scre
 - ✅ Spotify **PKCE auth** + encrypted refresh-token storage ([#2](https://github.com/sebastiankdittmann/spotify-pacer/issues/2))
 - ✅ **Pace curve** generator — constant, linear, delayed-exponential ([#4](https://github.com/sebastiankdittmann/spotify-pacer/issues/4))
 - ✅ **Track selector** — greedy minute-by-minute match with half/double-tempo substitution and widening tolerance ([#5](https://github.com/sebastiankdittmann/spotify-pacer/issues/5))
-- ⏳ Spotify **Web API** client — search, audio-features, playlists ([#3](https://github.com/sebastiankdittmann/spotify-pacer/issues/3))
+- ⏳ Spotify **Web API** client — `/me`, liked tracks, audio-features, playlist create/add ([#3](https://github.com/sebastiankdittmann/spotify-pacer/issues/3))
 - ⏳ **UI screens** — login, run setup, preview ([#6](https://github.com/sebastiankdittmann/spotify-pacer/issues/6), [#7](https://github.com/sebastiankdittmann/spotify-pacer/issues/7), [#8](https://github.com/sebastiankdittmann/spotify-pacer/issues/8))
 - ⏳ Save playlist to account ([#9](https://github.com/sebastiankdittmann/spotify-pacer/issues/9))
 
@@ -57,7 +57,7 @@ All under `app/src/main/java/dk/dittmann/spotifypacer/`.
    ```
 2. Open the project folder in Android Studio.
 3. Wait for **Gradle Sync** to finish. First sync downloads AGP, Kotlin, Compose, and the Android SDK components. The Gradle wrapper is pinned to 8.11.1 and committed.
-4. Create `local.properties` in the project root with your Spotify client ID:
+4. Add your Spotify client ID to `local.properties` in the project root (create the file if it doesn't exist; keep any existing entries like `sdk.dir`):
    ```properties
    spotify.clientId=paste_your_public_client_id_here
    ```
