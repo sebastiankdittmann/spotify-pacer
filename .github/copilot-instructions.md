@@ -40,6 +40,27 @@ Apply these in every suggestion. They override any stylistic default.
 - `audio-features` may be deprecated for new app registrations — flag if a suggestion depends on it without a fallback plan.
 - Cache audio-features locally; Spotify rate-limits aggressively.
 
+## Screenshots for UI PRs
+
+Any PR that adds or changes a Compose UI **must** include screenshots in the PR description. The repo is wired for headless, JVM-rendered screenshots via the `com.android.compose.screenshot` plugin — no emulator needed.
+
+**Workflow:**
+
+1. Write your composable in `app/src/main/java/...`.
+2. Mirror each visual state as a `@Preview` function in `app/src/screenshotTest/java/dk/dittmann/spotifypacer/...` (e.g. `LoginPreviewTest.kt` with `LoginIdlePreview`, `LoginLoadingPreview`, `LoginErrorPreview`, `LoginSuccessPreview`).
+3. Run `./gradlew :app:updateDebugScreenshotTest` to generate reference PNGs. They land under `app/src/debug/screenshotTest/reference/...`.
+4. Commit both the source previews and the reference PNGs on the PR branch.
+5. Embed each screenshot in the PR description using a relative path:
+
+   ```markdown
+   ## Screenshots
+   | State | Image |
+   |---|---|
+   | Idle | ![idle](app/src/debug/screenshotTest/reference/dk/dittmann/spotifypacer/ui/login/LoginPreviewTest_LoginIdlePreview.png) |
+   ```
+
+**CI enforces this:** `gradle validateDebugScreenshotTest` runs on every PR. If the committed reference PNGs don't match what the `@Preview`s now render, CI fails — regenerate and re-commit.
+
 ## PR and commit conventions
 
 - Small, focused PRs. One concern per PR.

@@ -38,6 +38,13 @@ Review the diff against the principles below. Comment only when you have a concr
 - **Dependence on `audio-features`** — deprecated for newer app registrations; flag if the PR adds a new code path relying on it with no fallback.
 - **Unbounded Spotify calls** — no caching, no pagination, no rate-limit handling on loops that hit the API per track.
 
+## UI PR screenshots
+
+- **Missing screenshots on a UI PR** — a PR that adds or changes a Compose composable must embed `@Preview` screenshots in the description. If absent, flag and link to `.github/copilot-instructions.md#screenshots-for-ui-prs`.
+- **New composable without a matching `@Preview` in the screenshot source set** — the preview is what drives the generated PNG. Flag missing entries in `app/src/screenshotTest/java/...`.
+- **Reference PNGs changed without a description of the visual change** — if `app/src/debug/screenshotTest/reference/**.png` is modified, the PR description should say what changed and why. Silent visual regressions are the thing this setup is designed to catch.
+- **Screenshot tests skipped** — flag CI workflow diffs that disable `validateDebugScreenshotTest`.
+
 ## PR hygiene
 
 - **Mixed concerns** — unrelated changes bundled in one PR. Suggest splitting.

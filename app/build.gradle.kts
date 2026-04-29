@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.compose.screenshot)
 }
 
 android {
@@ -35,6 +36,8 @@ android {
     kotlinOptions { jvmTarget = "17" }
 
     buildFeatures { compose = true }
+
+    experimentalProperties["android.experimental.enableScreenshotTest"] = true
 }
 
 dependencies {
@@ -56,4 +59,7 @@ dependencies {
 
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    screenshotTestImplementation(platform(libs.androidx.compose.bom))
+    screenshotTestImplementation(libs.androidx.ui.tooling)
 }
