@@ -229,7 +229,11 @@ class AuthServiceTest {
                 )
         )
 
-        authService.completeAuthorize(code = "auth-code", state = "expected-state", error = null)
+        authService.completeAuthorize(
+            code = "auth-code",
+            state = "expected-state",
+            spotifyError = null,
+        )
 
         assertEquals("a", authService.currentAccessToken())
         assertEquals("r", tokenStore.readRefreshToken())
@@ -240,7 +244,7 @@ class AuthServiceTest {
         nextState = "expected-state"
         authService.prepareAuthorize()
 
-        authService.completeAuthorize(code = "c", state = "attacker-state", error = null)
+        authService.completeAuthorize(code = "c", state = "attacker-state", spotifyError = null)
     }
 
     @Test(expected = IllegalStateException::class)
@@ -248,12 +252,12 @@ class AuthServiceTest {
         nextState = "s"
         authService.prepareAuthorize()
 
-        authService.completeAuthorize(code = null, state = "s", error = "access_denied")
+        authService.completeAuthorize(code = null, state = "s", spotifyError = "access_denied")
     }
 
     @Test(expected = IllegalStateException::class)
     fun completeAuthorize_throws_when_no_prepare_in_flight() = runTest {
-        authService.completeAuthorize(code = "c", state = "s", error = null)
+        authService.completeAuthorize(code = "c", state = "s", spotifyError = null)
     }
 
     @Test

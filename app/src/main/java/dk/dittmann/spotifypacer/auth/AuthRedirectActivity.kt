@@ -4,7 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.lifecycleScope
 import dk.dittmann.spotifypacer.SpotifyPacerApplication
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class AuthRedirectActivity : ComponentActivity() {
 
@@ -17,12 +19,14 @@ class AuthRedirectActivity : ComponentActivity() {
         }
         val service = (application as SpotifyPacerApplication).authService
         lifecycleScope.launch {
-            runCatching {
-                service.completeAuthorize(
-                    code = data.getQueryParameter("code"),
-                    state = data.getQueryParameter("state"),
-                    error = data.getQueryParameter("error"),
-                )
+            withContext(Dispatchers.IO) {
+                runCatching {
+                    service.completeAuthorize(
+                        code = data.getQueryParameter("code"),
+                        state = data.getQueryParameter("state"),
+                        spotifyError = data.getQueryParameter("error"),
+                    )
+                }
             }
             finish()
         }

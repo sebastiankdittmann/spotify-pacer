@@ -41,11 +41,11 @@ class AuthService(
             .addQueryParameter("scope", SCOPES.joinToString(" "))
             .build()
 
-    suspend fun completeAuthorize(code: String?, state: String?, error: String?) {
+    suspend fun completeAuthorize(code: String?, state: String?, spotifyError: String?) {
         val pending = pending ?: error("No pending authorization. Call prepareAuthorize() first.")
         try {
             check(state == pending.state) { "State mismatch on auth redirect." }
-            if (error != null) error("Spotify authorization failed: $error")
+            if (spotifyError != null) error("Spotify authorization failed: $spotifyError")
             checkNotNull(code) { "Missing authorization code in redirect." }
             exchangeCode(code = code, codeVerifier = pending.verifier)
         } finally {
