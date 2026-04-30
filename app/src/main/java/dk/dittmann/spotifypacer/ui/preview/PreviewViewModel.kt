@@ -3,6 +3,7 @@ package dk.dittmann.spotifypacer.ui.preview
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dk.dittmann.spotifypacer.bpm.BpmProviderException
 import dk.dittmann.spotifypacer.pacing.BpmSample
 import dk.dittmann.spotifypacer.pacing.CandidateTrack
 import dk.dittmann.spotifypacer.pacing.Selection
@@ -146,6 +147,9 @@ class PreviewViewModel(
 
 private fun errorReasonFor(e: Throwable, fallback: ErrorReason = ErrorReason.Unknown): ErrorReason =
     when (e) {
+        is BpmProviderException.Unconfigured -> ErrorReason.BpmProviderUnconfigured
+        is BpmProviderException.RateLimited -> ErrorReason.RateLimited
+        is BpmProviderException.Unavailable -> ErrorReason.BpmProviderUnavailable
         is IOException -> ErrorReason.Network
         is HttpException ->
             when (e.code()) {

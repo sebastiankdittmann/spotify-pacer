@@ -169,7 +169,29 @@ class PreviewScreenTest {
     fun error_rate_limited_renders_message() {
         render(PreviewState.Error(ErrorReason.RateLimited))
         composeRule
-            .onNodeWithText("Spotify is throttling requests. Wait a moment and retry.")
+            .onNodeWithText("The BPM provider is throttling requests. Wait a moment and retry.")
             .assertIsDisplayed()
+    }
+
+    @Test
+    fun error_bpm_unconfigured_renders_message() {
+        render(PreviewState.Error(ErrorReason.BpmProviderUnconfigured))
+        composeRule
+            .onNodeWithText("BPM lookup is not configured. The app needs a GetSongBPM API key.")
+            .assertIsDisplayed()
+    }
+
+    @Test
+    fun error_bpm_unavailable_renders_message() {
+        render(PreviewState.Error(ErrorReason.BpmProviderUnavailable))
+        composeRule
+            .onNodeWithText("Couldn't reach the BPM provider. Try again later.")
+            .assertIsDisplayed()
+    }
+
+    @Test
+    fun attribution_link_is_visible_in_every_state() {
+        render(PreviewState.Loading)
+        composeRule.onNodeWithText("BPM data powered by GetSongBPM").assertIsDisplayed()
     }
 }

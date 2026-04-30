@@ -41,21 +41,6 @@ data class Artist(@SerialName("id") val id: String? = null, @SerialName("name") 
 data class Album(@SerialName("id") val id: String? = null, @SerialName("name") val name: String)
 
 @Serializable
-data class AudioFeaturesResponse(
-    @SerialName("audio_features") val audioFeatures: List<AudioFeatures?>
-)
-
-@Serializable
-data class AudioFeatures(
-    @SerialName("id") val id: String,
-    @SerialName("uri") val uri: String? = null,
-    @SerialName("tempo") val tempo: Float,
-    @SerialName("energy") val energy: Float? = null,
-    @SerialName("danceability") val danceability: Float? = null,
-    @SerialName("duration_ms") val durationMs: Long? = null,
-)
-
-@Serializable
 data class CreatePlaylistBody(
     @SerialName("name") val name: String,
     @SerialName("public") val public: Boolean = false,

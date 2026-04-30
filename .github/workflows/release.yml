@@ -66,6 +66,7 @@ jobs:
         if: steps.tag_check.outputs.skip == 'false'
         env:
           SPOTIFY_CLIENT_ID: ${{ vars.SPOTIFY_CLIENT_ID }}
+          GETSONGBPM_API_KEY: ${{ vars.GETSONGBPM_API_KEY }}
           RELEASE_KEYSTORE_PATH: ${{ runner.temp }}/release.keystore
           RELEASE_KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           RELEASE_KEY_ALIAS: ${{ secrets.KEY_ALIAS }}

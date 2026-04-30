@@ -1,8 +1,8 @@
 package dk.dittmann.spotifypacer.spotify
 
 /**
- * High-level facade over [SpotifyApi] that handles batching constraints (Spotify enforces 100-item
- * limits on `audio-features` ids and `playlists/{id}/tracks` uris).
+ * High-level facade over [SpotifyApi] that handles batching constraints (Spotify enforces a 100-uri
+ * limit on `playlists/{id}/tracks`).
  */
 class SpotifyClient(private val api: SpotifyApi) {
 
@@ -10,16 +10,6 @@ class SpotifyClient(private val api: SpotifyApi) {
 
     suspend fun savedTracks(limit: Int = 50, offset: Int = 0): SavedTracksPage =
         api.savedTracks(limit = limit, offset = offset)
-
-    /** Fetches audio features for any number of track ids in 100-id chunks. */
-    suspend fun audioFeatures(ids: List<String>): List<AudioFeatures?> {
-        if (ids.isEmpty()) return emptyList()
-        val results = mutableListOf<AudioFeatures?>()
-        ids.chunked(MAX_AUDIO_FEATURES_BATCH).forEach { chunk ->
-            results += api.audioFeatures(chunk.joinToString(",")).audioFeatures
-        }
-        return results
-    }
 
     suspend fun createPlaylist(
         userId: String,
@@ -43,7 +33,6 @@ class SpotifyClient(private val api: SpotifyApi) {
     }
 
     private companion object {
-        const val MAX_AUDIO_FEATURES_BATCH = 100
         const val MAX_ADD_TRACKS_BATCH = 100
     }
 }

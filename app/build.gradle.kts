@@ -16,6 +16,16 @@ val spotifyClientId: String =
         }
         .getProperty("spotify.clientId") ?: System.getenv("SPOTIFY_CLIENT_ID") ?: ""
 
+// GetSongBPM API key (replaces Spotify's deprecated /v1/audio-features). Embedded in the APK; per
+// docs/DESIGN.md this is treated as a public quota-limited key, not a real secret.
+val getSongBpmApiKey: String =
+    Properties()
+        .apply {
+            val file = rootProject.file("local.properties")
+            if (file.exists()) file.inputStream().use { load(it) }
+        }
+        .getProperty("getsongbpm.apiKey") ?: System.getenv("GETSONGBPM_API_KEY") ?: ""
+
 // Single source of truth for the app version. Bumping version.txt triggers a
 // release build via .github/workflows/release.yml. See docs/RELEASING.md.
 val appVersionName: String = rootProject.file("version.txt").readText().trim()
@@ -45,6 +55,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "SPOTIFY_CLIENT_ID", "\"${spotifyClientId}\"")
         buildConfigField("String", "SPOTIFY_REDIRECT_URI", "\"spotifypacer://callback\"")
+        buildConfigField("String", "GETSONGBPM_API_KEY", "\"${getSongBpmApiKey}\"")
     }
 
     signingConfigs {

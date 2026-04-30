@@ -16,9 +16,6 @@ interface SpotifyApi {
         @Query("offset") offset: Int = 0,
     ): SavedTracksPage
 
-    @GET("v1/audio-features")
-    suspend fun audioFeatures(@Query("ids") ids: String): AudioFeaturesResponse
-
     @POST("v1/users/{user_id}/playlists")
     suspend fun createPlaylist(
         @Path("user_id") userId: String,

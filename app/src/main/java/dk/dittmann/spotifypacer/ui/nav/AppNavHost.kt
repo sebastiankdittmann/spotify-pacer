@@ -11,13 +11,18 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import dk.dittmann.spotifypacer.BuildConfig
 import dk.dittmann.spotifypacer.auth.AuthService
 import dk.dittmann.spotifypacer.auth.TokenStore
+import dk.dittmann.spotifypacer.bpm.BpmCache
+import dk.dittmann.spotifypacer.bpm.GetSongBpmApiFactory
+import dk.dittmann.spotifypacer.bpm.GetSongBpmRepository
 import dk.dittmann.spotifypacer.save.SavePlaylistUseCase
 import dk.dittmann.spotifypacer.spotify.SpotifyApiFactory
 import dk.dittmann.spotifypacer.spotify.SpotifyClient
 import dk.dittmann.spotifypacer.ui.login.SignInLauncher
 import dk.dittmann.spotifypacer.ui.preview.SpotifyCandidateLoader
+import java.io.File
 
 /**
  * Top-level NavHost. Wires the three v0.1 destinations together and constructs the long-lived
@@ -41,7 +46,18 @@ fun AppNavHost(
         remember(authService) {
             SpotifyClient(SpotifyApiFactory.create(AuthTokenBridge(authService)))
         }
-    val candidateLoader = remember(spotifyClient) { SpotifyCandidateLoader(spotifyClient) }
+    val bpmRepository =
+        remember(context) {
+            GetSongBpmRepository(
+                api = GetSongBpmApiFactory.create(),
+                cache = BpmCache(File(context.filesDir, "bpm-cache.json")),
+                apiKey = BuildConfig.GETSONGBPM_API_KEY,
+            )
+        }
+    val candidateLoader =
+        remember(spotifyClient, bpmRepository) {
+            SpotifyCandidateLoader(spotifyClient, bpmRepository)
+        }
     val savePlaylist = remember(spotifyClient) { SavePlaylistUseCase(spotifyClient) }
 
     NavHost(
