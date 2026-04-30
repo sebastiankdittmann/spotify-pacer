@@ -199,6 +199,76 @@ class AuthServiceTest {
     }
 
     @Test
+    fun isAuthenticated_initial_value_reflects_stored_refresh_token() {
+        val withToken = FakeTokenStore().also { it.saveRefreshToken("r") }
+        val service =
+            AuthService(
+                clientId = "cid",
+                redirectUri = "app://cb",
+                tokenStore = withToken,
+                api = AuthApiFactory.create(baseUrl = server.url("/").toString()),
+            )
+        assertEquals(true, service.isAuthenticated.value)
+
+        val empty =
+            AuthService(
+                clientId = "cid",
+                redirectUri = "app://cb",
+                tokenStore = FakeTokenStore(),
+                api = AuthApiFactory.create(baseUrl = server.url("/").toString()),
+            )
+        assertEquals(false, empty.isAuthenticated.value)
+    }
+
+    @Test
+    fun isAuthenticated_flips_true_after_successful_token_exchange() = runTest {
+        server.enqueue(
+            MockResponse()
+                .setHeader("Content-Type", "application/json")
+                .setBody(
+                    """
+                    {
+                      "access_token": "a",
+                      "token_type": "Bearer",
+                      "expires_in": 3600,
+                      "refresh_token": "r"
+                    }
+                    """
+                        .trimIndent()
+                )
+        )
+
+        assertEquals(false, authService.isAuthenticated.value)
+        authService.exchangeCode(code = "c", codeVerifier = "v")
+        assertEquals(true, authService.isAuthenticated.value)
+    }
+
+    @Test
+    fun isAuthenticated_flips_false_after_logout() = runTest {
+        tokenStore.saveRefreshToken("r")
+        server.enqueue(
+            MockResponse()
+                .setHeader("Content-Type", "application/json")
+                .setBody(
+                    """
+                    {
+                      "access_token": "a",
+                      "token_type": "Bearer",
+                      "expires_in": 3600
+                    }
+                    """
+                        .trimIndent()
+                )
+        )
+        authService.exchangeCode(code = "c", codeVerifier = "v")
+        assertEquals(true, authService.isAuthenticated.value)
+
+        authService.logout()
+
+        assertEquals(false, authService.isAuthenticated.value)
+    }
+
+    @Test
     fun prepareAuthorize_generates_pkce_and_state_and_returns_url() {
         nextState = "state-prep"
 
