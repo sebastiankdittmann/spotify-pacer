@@ -1,5 +1,6 @@
 package dk.dittmann.spotifypacer.ui.preview
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,7 +21,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import dk.dittmann.spotifypacer.R
 import dk.dittmann.spotifypacer.pacing.SelectedTrack
@@ -36,27 +42,54 @@ fun PreviewScreen(
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier.fillMaxSize().padding(16.dp), contentAlignment = Alignment.Center) {
-        when (state) {
-            PreviewState.Loading -> LoadingBody(stringResource(R.string.preview_loading))
-            is PreviewState.Ready ->
-                ReadyBody(
-                    selection = state.selection,
-                    onReroll = onReroll,
-                    onApprove = onApprove,
-                    actionsEnabled = true,
-                )
-            is PreviewState.Saving ->
-                ReadyBody(
-                    selection = state.selection,
-                    onReroll = onReroll,
-                    onApprove = onApprove,
-                    actionsEnabled = false,
-                    overlayText = stringResource(R.string.preview_saving),
-                )
-            is PreviewState.Saved -> SavedBody(state.playlistUrl, onOpenPlaylist)
-            is PreviewState.Error -> ErrorBody(state.reason, onRetry)
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            Box(
+                modifier = Modifier.fillMaxWidth().weight(1f),
+                contentAlignment = Alignment.Center,
+            ) {
+                when (state) {
+                    PreviewState.Loading -> LoadingBody(stringResource(R.string.preview_loading))
+                    is PreviewState.Ready ->
+                        ReadyBody(
+                            selection = state.selection,
+                            onReroll = onReroll,
+                            onApprove = onApprove,
+                            actionsEnabled = true,
+                        )
+                    is PreviewState.Saving ->
+                        ReadyBody(
+                            selection = state.selection,
+                            onReroll = onReroll,
+                            onApprove = onApprove,
+                            actionsEnabled = false,
+                            overlayText = stringResource(R.string.preview_saving),
+                        )
+                    is PreviewState.Saved -> SavedBody(state.playlistUrl, onOpenPlaylist)
+                    is PreviewState.Error -> ErrorBody(state.reason, onRetry)
+                }
+            }
+            GetSongBpmAttribution()
         }
     }
+}
+
+@Composable
+private fun GetSongBpmAttribution() {
+    val uriHandler = LocalUriHandler.current
+    val url = stringResource(R.string.getsongbpm_url)
+    val label = stringResource(R.string.preview_attribution_getsongbpm)
+    val annotated = buildAnnotatedString {
+        withStyle(SpanStyle(textDecoration = TextDecoration.Underline)) { append(label) }
+    }
+    Text(
+        text = annotated,
+        style = MaterialTheme.typography.labelSmall,
+        color = MaterialTheme.colorScheme.onSurfaceVariant,
+        modifier = Modifier.fillMaxWidth().padding(top = 4.dp).clickable { uriHandler.openUri(url) },
+    )
 }
 
 @Composable
@@ -188,6 +221,8 @@ private fun ErrorReason.messageRes(): Int =
         ErrorReason.Network -> R.string.preview_error_network
         ErrorReason.Forbidden -> R.string.preview_error_forbidden
         ErrorReason.RateLimited -> R.string.preview_error_rate_limited
+        ErrorReason.BpmProviderUnconfigured -> R.string.preview_error_bpm_unconfigured
+        ErrorReason.BpmProviderUnavailable -> R.string.preview_error_bpm_unavailable
         ErrorReason.EmptyPool -> R.string.preview_error_empty_pool
         ErrorReason.SaveFailed -> R.string.preview_error_save_failed
         ErrorReason.Unknown -> R.string.preview_error_unknown

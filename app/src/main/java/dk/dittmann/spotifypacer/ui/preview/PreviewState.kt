@@ -27,6 +27,8 @@ enum class ErrorReason {
     Network,
     Forbidden,
     RateLimited,
+    BpmProviderUnconfigured,
+    BpmProviderUnavailable,
     EmptyPool,
     SaveFailed,
     Unknown,

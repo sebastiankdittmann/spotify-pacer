@@ -33,27 +33,6 @@ class SpotifyClientTest {
     }
 
     @Test
-    fun audioFeatures_chunks_ids_into_batches_of_100() = runTest {
-        val ids = (1..150).map { "id$it" }
-        repeat(2) {
-            server.enqueue(
-                MockResponse()
-                    .setHeader("Content-Type", "application/json")
-                    .setBody("""{"audio_features":[]}""")
-            )
-        }
-
-        client.audioFeatures(ids)
-
-        val first = server.takeRequest()
-        val second = server.takeRequest()
-        val firstIds = first.requestUrl!!.queryParameter("ids")!!
-        val secondIds = second.requestUrl!!.queryParameter("ids")!!
-        assertEquals(100, firstIds.split(",").size)
-        assertEquals(50, secondIds.split(",").size)
-    }
-
-    @Test
     fun addTracks_chunks_uris_into_batches_of_100_and_returns_snapshot_per_batch() = runTest {
         val uris = (1..150).map { "spotify:track:t$it" }
         server.enqueue(

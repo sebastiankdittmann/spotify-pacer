@@ -35,10 +35,14 @@
     <string name="preview_saved_open_link">Open in Spotify</string>
     <string name="preview_error_network">Couldn\'t reach Spotify. Check your connection.</string>
     <string name="preview_error_forbidden">Spotify refused access. Try signing in again or retry.</string>
-    <string name="preview_error_rate_limited">Spotify is throttling requests. Wait a moment and retry.</string>
+    <string name="preview_error_rate_limited">The BPM provider is throttling requests. Wait a moment and retry.</string>
+    <string name="preview_error_bpm_unconfigured">BPM lookup is not configured. The app needs a GetSongBPM API key.</string>
+    <string name="preview_error_bpm_unavailable">Couldn\'t reach the BPM provider. Try again later.</string>
     <string name="preview_error_empty_pool">No tracks in your library matched the curve.</string>
     <string name="preview_error_save_failed">Saving the playlist failed. Try again.</string>
     <string name="preview_error_unknown">Something went wrong. Try again.</string>
     <string name="preview_retry_button">Retry</string>
+    <string name="preview_attribution_getsongbpm">BPM data powered by GetSongBPM</string>
+    <string name="getsongbpm_url" translatable="false">https://getsongbpm.com/</string>
 </resources>
 

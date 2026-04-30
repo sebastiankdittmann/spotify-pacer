@@ -24,12 +24,13 @@ Until v1.0 the workflow runs against the GitHub `Development` environment. Confi
 | Type | Name | Purpose |
 |---|---|---|
 | Variable | `SPOTIFY_CLIENT_ID` | Public PKCE client ID baked into `BuildConfig`. |
+| Variable | `GETSONGBPM_API_KEY` | GetSongBPM API key. Public-by-design (extractable from APK; quota-limited). |
 | Secret | `KEYSTORE_BASE64` | Release keystore, base64-encoded. |
 | Secret | `KEYSTORE_PASSWORD` | Keystore password. |
 | Secret | `KEY_ALIAS` | Signing key alias inside the keystore. |
 | Secret | `KEY_PASSWORD` | Password for the signing key. |
 
-The client ID is intentionally a variable, not a secret — under PKCE it's public and ships in the APK.
+The client ID and the GetSongBPM API key are intentionally variables, not secrets — both are public and ship in the APK. The Spotify client ID is exposed under PKCE; the GetSongBPM key is a quota-limited identifier the provider issues per requester.
 
 ### Generating a release keystore (one-off)
 

@@ -9,7 +9,6 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
@@ -93,33 +92,6 @@ class SpotifyApiTest {
         assertEquals("Artist", page.items[0].track.artists[0].name)
         val recorded = server.takeRequest()
         assertEquals("/v1/me/tracks?limit=50&offset=0", recorded.path)
-    }
-
-    @Test
-    fun audioFeatures_sends_comma_separated_ids() = runTest {
-        server.enqueue(
-            MockResponse()
-                .setHeader("Content-Type", "application/json")
-                .setBody(
-                    """
-                    {
-                      "audio_features": [
-                        {"id":"t1","tempo":172.5,"energy":0.8,"duration_ms":240000},
-                        null
-                      ]
-                    }
-                    """
-                        .trimIndent()
-                )
-        )
-
-        val response = api.audioFeatures(ids = "t1,t2")
-
-        assertEquals(2, response.audioFeatures.size)
-        assertEquals(172.5f, response.audioFeatures[0]!!.tempo, 0.001f)
-        assertNull(response.audioFeatures[1])
-        val recorded = server.takeRequest()
-        assertEquals("/v1/audio-features?ids=t1%2Ct2", recorded.path)
     }
 
     @Test
