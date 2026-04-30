@@ -91,12 +91,7 @@ android {
 
     experimentalProperties["android.experimental.enableScreenshotTest"] = true
 
-    testOptions {
-        unitTests {
-            isIncludeAndroidResources = true
-            isReturnDefaultValues = true
-        }
-    }
+    testOptions { unitTests { isIncludeAndroidResources = true } }
 }
 
 kotlin { jvmToolchain(17) }

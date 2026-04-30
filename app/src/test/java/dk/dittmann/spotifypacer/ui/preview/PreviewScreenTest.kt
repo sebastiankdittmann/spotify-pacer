@@ -156,4 +156,20 @@ class PreviewScreenTest {
         render(PreviewState.Error(ErrorReason.SaveFailed))
         composeRule.onNodeWithText("Saving the playlist failed. Try again.").assertIsDisplayed()
     }
+
+    @Test
+    fun error_forbidden_renders_message() {
+        render(PreviewState.Error(ErrorReason.Forbidden))
+        composeRule
+            .onNodeWithText("Spotify refused access. Try signing in again or retry.")
+            .assertIsDisplayed()
+    }
+
+    @Test
+    fun error_rate_limited_renders_message() {
+        render(PreviewState.Error(ErrorReason.RateLimited))
+        composeRule
+            .onNodeWithText("Spotify is throttling requests. Wait a moment and retry.")
+            .assertIsDisplayed()
+    }
 }

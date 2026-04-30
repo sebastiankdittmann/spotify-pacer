@@ -69,7 +69,7 @@ The preview screen maps load-path failures from the Spotify Web API to user-visi
 | `RateLimited` | HTTP `429` | Throttling. The OkHttp `RateLimitInterceptor` retries once on `Retry-After`; only persistent throttling reaches the user. |
 | `EmptyPool` | Liked-tracks empty, or zero matches against the curve | |
 | `SaveFailed` | `SavePlaylistResult.Failure` from `SavePlaylistUseCase` | |
-| `Unknown` | Final fallback | All other throwables — including `HttpException` codes outside the buckets above. |
+| `Unknown` | Final fallback for the load path | All other throwables — including `HttpException` codes outside the buckets above. The save path uses `SaveFailed` as its fallback instead. |
 
 `PreviewViewModel` logs the throwable (tag `PreviewViewModel`) before mapping. Auth-token refresh failures log under `AuthTokenBridge`. The `SpotifyApiFactory` wires an `HttpLoggingInterceptor` at `BASIC` level in debug builds — method, URL, response code, duration; no headers/bodies. Bearer tokens stay out of logcat; track IDs in `?ids=…` query params do not.
 

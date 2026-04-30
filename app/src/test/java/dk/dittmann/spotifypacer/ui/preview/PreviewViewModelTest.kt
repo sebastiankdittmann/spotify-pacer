@@ -1,5 +1,6 @@
 package dk.dittmann.spotifypacer.ui.preview
 
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import dk.dittmann.spotifypacer.pacing.CandidateTrack
 import dk.dittmann.spotifypacer.pacing.PaceStrategy
 import dk.dittmann.spotifypacer.pacing.Selection
@@ -22,10 +23,12 @@ import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
 import retrofit2.HttpException
 import retrofit2.Response
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@RunWith(AndroidJUnit4::class)
 class PreviewViewModelTest {
 
     private val dispatcher = StandardTestDispatcher()

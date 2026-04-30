@@ -144,10 +144,7 @@ class PreviewViewModel(
     }
 }
 
-internal fun errorReasonFor(
-    e: Throwable,
-    fallback: ErrorReason = ErrorReason.Unknown,
-): ErrorReason =
+private fun errorReasonFor(e: Throwable, fallback: ErrorReason = ErrorReason.Unknown): ErrorReason =
     when (e) {
         is IOException -> ErrorReason.Network
         is HttpException ->
