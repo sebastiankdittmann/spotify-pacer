@@ -23,5 +23,20 @@
     <string name="setup_curve_preview_label">BPM curve preview</string>
     <string name="setup_curve_preview_content_description">BPM curve preview chart</string>
     <string name="setup_submit_button">Continue</string>
+
+    <string name="preview_title">Your playlist</string>
+    <string name="preview_loading">Building your pacer playlist…</string>
+    <string name="preview_track_count">%1$d tracks · %2$s</string>
+    <string name="preview_track_meta">%1$d BPM · %2$s · starts at %3$s</string>
+    <string name="preview_reroll_button">Re-roll</string>
+    <string name="preview_approve_button">Approve &amp; save</string>
+    <string name="preview_saving">Saving to Spotify…</string>
+    <string name="preview_saved_title">Saved!</string>
+    <string name="preview_saved_open_link">Open in Spotify</string>
+    <string name="preview_error_network">Couldn\'t reach Spotify. Check your connection.</string>
+    <string name="preview_error_empty_pool">No tracks in your library matched the curve.</string>
+    <string name="preview_error_save_failed">Saving the playlist failed. Try again.</string>
+    <string name="preview_error_unknown">Something went wrong. Try again.</string>
+    <string name="preview_retry_button">Retry</string>
 </resources>
 
