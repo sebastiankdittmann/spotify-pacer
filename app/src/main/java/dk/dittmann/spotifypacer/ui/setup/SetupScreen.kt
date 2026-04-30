@@ -26,6 +26,8 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -151,17 +153,16 @@ internal fun BpmCurvePreview(strategy: StrategyChoice, modifier: Modifier = Modi
             endBpm = PREVIEW_END_BPM,
         )
     val color = MaterialTheme.colorScheme.primary
-    Canvas(modifier = modifier) {
+    val description = stringResource(R.string.setup_curve_preview_content_description)
+    Canvas(modifier = modifier.semantics { contentDescription = description }) {
         if (samples.size < 2) return@Canvas
-        val minBpm = samples.minOf { it.bpm }
-        val maxBpm = samples.maxOf { it.bpm }
-        val bpmRange = (maxBpm - minBpm).takeIf { it > 0.0 } ?: 1.0
+        val bpmRange = (PREVIEW_END_BPM - PREVIEW_START_BPM).toDouble()
         val totalT = samples.last().timeSec.toDouble().takeIf { it > 0.0 } ?: 1.0
 
         val path = Path()
         samples.forEachIndexed { index, sample ->
             val x = (sample.timeSec / totalT * size.width).toFloat()
-            val y = (size.height * (1.0 - (sample.bpm - minBpm) / bpmRange)).toFloat()
+            val y = (size.height * (1.0 - (sample.bpm - PREVIEW_START_BPM) / bpmRange)).toFloat()
             if (index == 0) path.moveTo(x, y) else path.lineTo(x, y)
         }
         drawPath(path = path, color = color, style = Stroke(width = 4f))

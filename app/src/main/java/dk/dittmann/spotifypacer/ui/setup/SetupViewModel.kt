@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 private const val MIN_PACE_SEC_PER_KM = 180
 private const val MAX_PACE_SEC_PER_KM = 600
@@ -46,10 +47,6 @@ class SetupViewModel : ViewModel() {
         val seconds = current.parsedTargetTimeSec() ?: return null
         return RunConfig(km, seconds, current.strategy.toStrategy())
     }
-}
-
-private fun MutableStateFlow<SetupState>.update(transform: (SetupState) -> SetupState) {
-    value = transform(value)
 }
 
 private fun SetupState.parsedDistanceKm(): Double? =

@@ -21,6 +21,7 @@
     <string name="setup_strategy_linear">Linear ramp</string>
     <string name="setup_strategy_delayed_exponential">Delayed exponential</string>
     <string name="setup_curve_preview_label">BPM curve preview</string>
+    <string name="setup_curve_preview_content_description">BPM curve preview chart</string>
     <string name="setup_submit_button">Continue</string>
 </resources>
 
