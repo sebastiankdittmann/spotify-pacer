@@ -4,5 +4,24 @@
     <string name="login_tagline">Build a playlist paced to your run.</string>
     <string name="login_sign_in_button">Sign in with Spotify</string>
     <string name="login_loading_description">Signing you in</string>
+
+    <string name="setup_title">Plan your run</string>
+    <string name="setup_distance_label">Distance (km)</string>
+    <string name="setup_distance_placeholder">5.0</string>
+    <string name="setup_distance_error_not_a_number">Enter a number, e.g. 5.0</string>
+    <string name="setup_distance_error_not_positive">Distance must be greater than 0</string>
+    <string name="setup_target_time_label">Target time</string>
+    <string name="setup_target_time_placeholder">28:00 or 1:05:00</string>
+    <string name="setup_target_time_error_malformed">Use mm:ss or hh:mm:ss</string>
+    <string name="setup_target_time_error_not_positive">Target time must be greater than 0</string>
+    <string name="setup_pace_warning_too_fast">That pace is faster than 3:00 min/km — sure?</string>
+    <string name="setup_pace_warning_too_slow">That pace is slower than 10:00 min/km — sure?</string>
+    <string name="setup_strategy_label">Pace strategy</string>
+    <string name="setup_strategy_constant">Constant</string>
+    <string name="setup_strategy_linear">Linear ramp</string>
+    <string name="setup_strategy_delayed_exponential">Delayed exponential</string>
+    <string name="setup_curve_preview_label">BPM curve preview</string>
+    <string name="setup_curve_preview_content_description">BPM curve preview chart</string>
+    <string name="setup_submit_button">Continue</string>
 </resources>
 
