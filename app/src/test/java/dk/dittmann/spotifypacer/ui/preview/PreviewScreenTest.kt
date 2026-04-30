@@ -3,6 +3,7 @@ package dk.dittmann.spotifypacer.ui.preview
 import androidx.activity.ComponentActivity
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -114,7 +115,8 @@ class PreviewScreenTest {
         var rerolls = 0
         render(PreviewState.Saving(config, curve(), selection()), onReroll = { rerolls++ })
         composeRule.onNodeWithText("Saving to Spotify…").assertIsDisplayed()
-        composeRule.onNodeWithText("Re-roll").performClick()
+        composeRule.onNodeWithText("Re-roll").assertIsNotEnabled()
+        composeRule.onNodeWithText("Approve & save").assertIsNotEnabled()
         assertEquals(0, rerolls)
     }
 

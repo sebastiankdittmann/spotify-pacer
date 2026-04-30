@@ -11,8 +11,10 @@ import dk.dittmann.spotifypacer.save.SavePlaylistResult
 import dk.dittmann.spotifypacer.ui.setup.RunConfig
 import java.io.IOException
 import kotlin.random.Random
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -30,6 +32,7 @@ class PreviewViewModel(
     private val candidates: CandidateLoader,
     private val save: suspend (RunConfig, Selection) -> SavePlaylistResult,
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO,
+    private val workDispatcher: CoroutineDispatcher = Dispatchers.Default,
     private val randomFactory: () -> Random = { Random.Default },
 ) : ViewModel() {
 
@@ -37,6 +40,7 @@ class PreviewViewModel(
     val state: StateFlow<PreviewState> = _state.asStateFlow()
 
     private var pool: List<CandidateTrack> = emptyList()
+    private var loadJob: Job? = null
 
     init {
         load()
@@ -44,12 +48,14 @@ class PreviewViewModel(
 
     fun onReroll() {
         val current = _state.value as? PreviewState.Ready ?: return
-        val selection = runSelection(current.curve, pool)
-        if (selection.tracks.isEmpty()) {
-            _state.value = PreviewState.Error(ErrorReason.EmptyPool)
-            return
+        viewModelScope.launch {
+            val selection = withContext(workDispatcher) { runSelection(current.curve, pool) }
+            if (selection.tracks.isEmpty()) {
+                _state.value = PreviewState.Error(ErrorReason.EmptyPool)
+                return@launch
+            }
+            _state.value = current.copy(selection = selection)
         }
-        _state.value = current.copy(selection = selection)
     }
 
     fun onApprove() {
@@ -61,11 +67,20 @@ class PreviewViewModel(
                 selection = current.selection,
             )
         viewModelScope.launch {
-            val result = withContext(ioDispatcher) { save(current.config, current.selection) }
             _state.value =
-                when (result) {
-                    is SavePlaylistResult.Success -> PreviewState.Saved(result.playlistUrl)
-                    is SavePlaylistResult.Failure -> PreviewState.Error(ErrorReason.SaveFailed)
+                try {
+                    val result =
+                        withContext(ioDispatcher) { save(current.config, current.selection) }
+                    when (result) {
+                        is SavePlaylistResult.Success -> PreviewState.Saved(result.playlistUrl)
+                        is SavePlaylistResult.Failure -> PreviewState.Error(ErrorReason.SaveFailed)
+                    }
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: IOException) {
+                    PreviewState.Error(ErrorReason.Network)
+                } catch (e: Exception) {
+                    PreviewState.Error(ErrorReason.Unknown)
                 }
         }
     }
@@ -75,32 +90,44 @@ class PreviewViewModel(
     }
 
     private fun load() {
+        loadJob?.cancel()
         _state.value = PreviewState.Loading
-        viewModelScope.launch {
-            try {
-                val loaded = withContext(ioDispatcher) { candidates.load() }
-                pool = loaded
-                if (loaded.isEmpty()) {
-                    _state.value = PreviewState.Error(ErrorReason.EmptyPool)
-                    return@launch
+        loadJob =
+            viewModelScope.launch {
+                try {
+                    val loaded = withContext(ioDispatcher) { candidates.load() }
+                    pool = loaded
+                    if (loaded.isEmpty()) {
+                        _state.value = PreviewState.Error(ErrorReason.EmptyPool)
+                        return@launch
+                    }
+                    val (curve, selection) =
+                        withContext(workDispatcher) {
+                            val curve =
+                                generateCurve(
+                                    strategy = config.strategy,
+                                    totalSeconds = config.targetTimeSec,
+                                    startBpm = START_BPM,
+                                    endBpm = END_BPM,
+                                )
+                            curve to runSelection(curve, loaded)
+                        }
+                    _state.value =
+                        if (selection.tracks.isEmpty()) PreviewState.Error(ErrorReason.EmptyPool)
+                        else
+                            PreviewState.Ready(
+                                config = config,
+                                curve = curve,
+                                selection = selection,
+                            )
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: IOException) {
+                    _state.value = PreviewState.Error(ErrorReason.Network)
+                } catch (e: Exception) {
+                    _state.value = PreviewState.Error(ErrorReason.Unknown)
                 }
-                val curve =
-                    generateCurve(
-                        strategy = config.strategy,
-                        totalSeconds = config.targetTimeSec,
-                        startBpm = START_BPM,
-                        endBpm = END_BPM,
-                    )
-                val selection = runSelection(curve, loaded)
-                _state.value =
-                    if (selection.tracks.isEmpty()) PreviewState.Error(ErrorReason.EmptyPool)
-                    else PreviewState.Ready(config = config, curve = curve, selection = selection)
-            } catch (e: IOException) {
-                _state.value = PreviewState.Error(ErrorReason.Network)
-            } catch (e: Exception) {
-                _state.value = PreviewState.Error(ErrorReason.Unknown)
             }
-        }
     }
 
     private fun runSelection(curve: List<BpmSample>, pool: List<CandidateTrack>): Selection =

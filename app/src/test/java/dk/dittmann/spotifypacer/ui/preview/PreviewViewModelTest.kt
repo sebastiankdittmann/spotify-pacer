@@ -64,6 +64,7 @@ class PreviewViewModelTest {
             candidates = loader,
             save = save,
             ioDispatcher = UnconfinedTestDispatcher(dispatcher.scheduler),
+            workDispatcher = UnconfinedTestDispatcher(dispatcher.scheduler),
             randomFactory = randomFactory,
         )
 
