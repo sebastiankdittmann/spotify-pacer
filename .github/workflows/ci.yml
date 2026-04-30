@@ -50,5 +50,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: screenshot-diffs
-          path: app/build/outputs/screenshot-test-results/**
+          path: |
+            app/build/reports/screenshotTest/**
+            app/build/outputs/screenshot-test-results/**
           if-no-files-found: ignore
