@@ -2,11 +2,11 @@ package dk.dittmann.spotifypacer.save
 
 import dk.dittmann.spotifypacer.pacing.PaceStrategy
 import dk.dittmann.spotifypacer.ui.setup.RunConfig
+import java.util.Locale
 
 /**
- * Single source of truth for user-facing playlist names and descriptions, per ticket #9. Anything
- * that needs to format a strategy, distance, or duration goes through here so the wording stays
- * consistent.
+ * Single source of truth for user-facing playlist names and descriptions. Anything that needs to
+ * format a strategy, distance, or duration goes through here so the wording stays consistent.
  */
 object PlaylistNaming {
 
@@ -22,13 +22,13 @@ object PlaylistNaming {
 
     private fun formatDistance(km: Double): String {
         val whole = km.toLong()
-        return if (km == whole.toDouble()) "${whole}km" else "%.2fkm".format(km)
+        return if (km == whole.toDouble()) "${whole}km" else "%.2fkm".format(Locale.ROOT, km)
     }
 
     private fun formatTime(totalSec: Int): String {
         val m = totalSec / 60
         val s = totalSec % 60
-        return "%d:%02d".format(m, s)
+        return "%d:%02d".format(Locale.ROOT, m, s)
     }
 
     private fun strategyLabel(strategy: PaceStrategy): String =
