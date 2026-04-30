@@ -1,5 +1,8 @@
 # spotify-pacer
 
+[![Latest release](https://img.shields.io/github/v/release/sebastiankdittmann/spotify-pacer?label=release&sort=semver)](https://github.com/sebastiankdittmann/spotify-pacer/releases/latest)
+[![Release date](https://img.shields.io/github/release-date/sebastiankdittmann/spotify-pacer?label=released)](https://github.com/sebastiankdittmann/spotify-pacer/releases/latest)
+
 Android app that builds Spotify playlists paced to your run.
 
 You pick a **distance** and **target time**. You pick a **pace strategy** (constant, linear ramp, or delayed-exponential ramp). The app queries your Spotify library, selects tracks whose BPM matches the pace curve minute-by-minute, shows you the lineup, and — on your approval — saves it as a new playlist to your account.
@@ -41,6 +44,18 @@ All under `app/src/main/java/dk/dittmann/spotifypacer/`.
 
 - [Requirements](docs/REQUIREMENTS.md)
 - [Design](docs/DESIGN.md)
+- [Releasing](docs/RELEASING.md)
+
+## Installing a release
+
+Side-load the latest signed APK on any Android 10+ device:
+
+1. On the phone, allow installs from your browser: **Settings → Apps → Special access → Install unknown apps** → enable for the browser you'll download with.
+2. Open the [latest release](https://github.com/sebastiankdittmann/spotify-pacer/releases/latest) and download the `spotify-pacer-<version>.apk` asset.
+3. Tap the downloaded file in your notifications (or in **Files**) and confirm **Install**.
+4. Launch **spotify-pacer** and sign in with your Spotify account.
+
+To upgrade, repeat the steps with a newer release — Android keeps your data as long as the signing key matches.
 
 ## Prerequisites
 
