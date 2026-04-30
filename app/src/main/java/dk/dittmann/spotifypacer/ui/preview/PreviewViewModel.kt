@@ -1,5 +1,6 @@
 package dk.dittmann.spotifypacer.ui.preview
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dk.dittmann.spotifypacer.pacing.BpmSample
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import retrofit2.HttpException
 
 /**
  * Drives the preview screen. Loads the candidate pool, generates the BPM curve, runs the selector,
@@ -73,14 +75,16 @@ class PreviewViewModel(
                         withContext(ioDispatcher) { save(current.config, current.selection) }
                     when (result) {
                         is SavePlaylistResult.Success -> PreviewState.Saved(result.playlistUrl)
-                        is SavePlaylistResult.Failure -> PreviewState.Error(ErrorReason.SaveFailed)
+                        is SavePlaylistResult.Failure -> {
+                            Log.w(TAG, "Save failed at stage=${result.stage}", result.cause)
+                            PreviewState.Error(ErrorReason.SaveFailed)
+                        }
                     }
                 } catch (e: CancellationException) {
                     throw e
-                } catch (e: IOException) {
-                    PreviewState.Error(ErrorReason.Network)
                 } catch (e: Exception) {
-                    PreviewState.Error(ErrorReason.Unknown)
+                    Log.w(TAG, "Save threw", e)
+                    PreviewState.Error(errorReasonFor(e, fallback = ErrorReason.SaveFailed))
                 }
         }
     }
@@ -122,10 +126,9 @@ class PreviewViewModel(
                             )
                 } catch (e: CancellationException) {
                     throw e
-                } catch (e: IOException) {
-                    _state.value = PreviewState.Error(ErrorReason.Network)
                 } catch (e: Exception) {
-                    _state.value = PreviewState.Error(ErrorReason.Unknown)
+                    Log.w(TAG, "Candidate load failed", e)
+                    _state.value = PreviewState.Error(errorReasonFor(e))
                 }
             }
     }
@@ -134,8 +137,24 @@ class PreviewViewModel(
         select(curve = curve, candidates = pool, random = randomFactory())
 
     private companion object {
+        private const val TAG = "PreviewViewModel"
         // Per docs/DESIGN.md §pace curves: avg ≈ 175 spm typical recreational cadence, ±10 BPM.
         const val START_BPM = 165
         const val END_BPM = 185
     }
 }
+
+internal fun errorReasonFor(
+    e: Throwable,
+    fallback: ErrorReason = ErrorReason.Unknown,
+): ErrorReason =
+    when (e) {
+        is IOException -> ErrorReason.Network
+        is HttpException ->
+            when (e.code()) {
+                403 -> ErrorReason.Forbidden
+                429 -> ErrorReason.RateLimited
+                else -> fallback
+            }
+        else -> fallback
+    }

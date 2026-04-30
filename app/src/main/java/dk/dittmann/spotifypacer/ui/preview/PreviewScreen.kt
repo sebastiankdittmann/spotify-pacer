@@ -186,6 +186,8 @@ private fun ErrorBody(reason: ErrorReason, onRetry: () -> Unit) {
 private fun ErrorReason.messageRes(): Int =
     when (this) {
         ErrorReason.Network -> R.string.preview_error_network
+        ErrorReason.Forbidden -> R.string.preview_error_forbidden
+        ErrorReason.RateLimited -> R.string.preview_error_rate_limited
         ErrorReason.EmptyPool -> R.string.preview_error_empty_pool
         ErrorReason.SaveFailed -> R.string.preview_error_save_failed
         ErrorReason.Unknown -> R.string.preview_error_unknown

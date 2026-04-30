@@ -91,7 +91,12 @@ android {
 
     experimentalProperties["android.experimental.enableScreenshotTest"] = true
 
-    testOptions { unitTests { isIncludeAndroidResources = true } }
+    testOptions {
+        unitTests {
+            isIncludeAndroidResources = true
+            isReturnDefaultValues = true
+        }
+    }
 }
 
 kotlin { jvmToolchain(17) }
@@ -115,6 +120,7 @@ dependencies {
     implementation(libs.retrofit)
     implementation(libs.retrofit.kotlinx.serialization.converter)
     implementation(libs.okhttp)
+    implementation(libs.okhttp.logging.interceptor)
 
     testImplementation(libs.junit)
     testImplementation(libs.robolectric)

@@ -1,5 +1,6 @@
 package dk.dittmann.spotifypacer.ui.nav
 
+import android.util.Log
 import dk.dittmann.spotifypacer.auth.AuthService
 import dk.dittmann.spotifypacer.spotify.SpotifyTokenProvider
 import kotlinx.coroutines.runBlocking
@@ -16,5 +17,16 @@ class AuthTokenBridge(private val authService: AuthService) : SpotifyTokenProvid
     override fun currentAccessToken(): String? = authService.currentAccessToken()
 
     override fun refreshAccessToken(): String =
-        synchronized(refreshLock) { runBlocking { authService.refreshAccessToken() } }
+        synchronized(refreshLock) {
+            try {
+                runBlocking { authService.refreshAccessToken() }
+            } catch (e: Exception) {
+                Log.w(TAG, "Access-token refresh failed", e)
+                throw e
+            }
+        }
+
+    private companion object {
+        private const val TAG = "AuthTokenBridge"
+    }
 }
