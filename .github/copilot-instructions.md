@@ -103,3 +103,6 @@ Any PR that adds or changes a Compose UI **must** include screenshots in the PR 
 ## When stuck
 
 If a change requires guessing at the user's intent, stop and ask. Don't invent requirements.
+
+## Documentation
+- Before submitting a PR, review the documentation in the repository and add documentation updates where necessary
