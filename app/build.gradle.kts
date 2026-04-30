@@ -16,6 +16,22 @@ val spotifyClientId: String =
         }
         .getProperty("spotify.clientId") ?: System.getenv("SPOTIFY_CLIENT_ID") ?: ""
 
+// Single source of truth for the app version. Bumping version.txt triggers a
+// release build via .github/workflows/release.yml. See docs/RELEASING.md.
+val appVersionName: String = rootProject.file("version.txt").readText().trim()
+val appVersionCode: Int =
+    appVersionName.split(".").let { (major, minor, patch) ->
+        require(minor.toInt() < 100 && patch.toInt() < 100) {
+            "version.txt minor/patch must each be < 100 (got $appVersionName)"
+        }
+        major.toInt() * 10_000 + minor.toInt() * 100 + patch.toInt()
+    }
+
+val releaseKeystorePath: String? = System.getenv("RELEASE_KEYSTORE_PATH")
+val releaseKeystorePassword: String? = System.getenv("RELEASE_KEYSTORE_PASSWORD")
+val releaseKeyAlias: String? = System.getenv("RELEASE_KEY_ALIAS")
+val releaseKeyPassword: String? = System.getenv("RELEASE_KEY_PASSWORD")
+
 android {
     namespace = "dk.dittmann.spotifypacer"
     compileSdk = 35
@@ -24,11 +40,29 @@ android {
         applicationId = "dk.dittmann.spotifypacer"
         minSdk = 29
         targetSdk = 35
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = appVersionCode
+        versionName = appVersionName
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "SPOTIFY_CLIENT_ID", "\"${spotifyClientId}\"")
         buildConfigField("String", "SPOTIFY_REDIRECT_URI", "\"spotifypacer://callback\"")
+    }
+
+    signingConfigs {
+        // Only registered when all four env vars are present (CD workflow).
+        // Locally `assembleRelease` falls back to the debug signing config below.
+        if (
+            releaseKeystorePath != null &&
+                releaseKeystorePassword != null &&
+                releaseKeyAlias != null &&
+                releaseKeyPassword != null
+        ) {
+            create("release") {
+                storeFile = file(releaseKeystorePath!!)
+                storePassword = releaseKeystorePassword
+                keyAlias = releaseKeyAlias
+                keyPassword = releaseKeyPassword
+            }
+        }
     }
 
     buildTypes {
@@ -38,6 +72,8 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
+            signingConfig =
+                signingConfigs.findByName("release") ?: signingConfigs.getByName("debug")
         }
     }
 
