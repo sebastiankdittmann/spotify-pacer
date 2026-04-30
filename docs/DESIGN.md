@@ -58,6 +58,21 @@ Scopes needed:
 - `playlist-read-private` / `playlist-read-collaborative` — read user's existing playlists as source material.
 - `playlist-modify-private` (and possibly `playlist-modify-public`) — write the generated playlist.
 
+## Error surfacing
+
+The preview screen maps load-path failures from the Spotify Web API to user-visible buckets:
+
+| Bucket | Trigger | Notes |
+|---|---|---|
+| `Network` | `IOException` (no connectivity, DNS, socket reset) | |
+| `Forbidden` | HTTP `403` | Often a scope mismatch. Also a known risk: Spotify deprecated `/v1/audio-features` for new app registrations in late 2024 — the selector relies on it for BPM, so a deprecated app surfaces here. |
+| `RateLimited` | HTTP `429` | Throttling. The OkHttp `RateLimitInterceptor` retries once on `Retry-After`; only persistent throttling reaches the user. |
+| `EmptyPool` | Liked-tracks empty, or zero matches against the curve | |
+| `SaveFailed` | `SavePlaylistResult.Failure` from `SavePlaylistUseCase` | |
+| `Unknown` | Final fallback for the load path | All other throwables — including `HttpException` codes outside the buckets above. The save path uses `SaveFailed` as its fallback instead. |
+
+`PreviewViewModel` logs the throwable (tag `PreviewViewModel`) before mapping. Auth-token refresh failures log under `AuthTokenBridge`. The `SpotifyApiFactory` wires an `HttpLoggingInterceptor` at `BASIC` level in debug builds — method, URL, response code, duration; no headers/bodies. Bearer tokens stay out of logcat; track IDs in `?ids=…` query params do not.
+
 ## High-level modules (tentative)
 
 - `auth/` — PKCE flow, token storage, refresh.

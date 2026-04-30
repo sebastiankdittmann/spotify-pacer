@@ -1,5 +1,6 @@
 package dk.dittmann.spotifypacer.ui.preview
 
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import dk.dittmann.spotifypacer.pacing.CandidateTrack
 import dk.dittmann.spotifypacer.pacing.PaceStrategy
 import dk.dittmann.spotifypacer.pacing.Selection
@@ -15,13 +16,19 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
+import retrofit2.HttpException
+import retrofit2.Response
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@RunWith(AndroidJUnit4::class)
 class PreviewViewModelTest {
 
     private val dispatcher = StandardTestDispatcher()
@@ -98,6 +105,27 @@ class PreviewViewModelTest {
     @Test
     fun unknown_failure_surfaces_unknown_error() = runTest {
         val vm = viewModel(loader = { throw IllegalStateException("boom") })
+        advanceUntilIdle()
+        assertEquals(PreviewState.Error(ErrorReason.Unknown), vm.state.value)
+    }
+
+    @Test
+    fun forbidden_http_error_surfaces_forbidden_error() = runTest {
+        val vm = viewModel(loader = { throw httpException(403) })
+        advanceUntilIdle()
+        assertEquals(PreviewState.Error(ErrorReason.Forbidden), vm.state.value)
+    }
+
+    @Test
+    fun rate_limited_http_error_surfaces_rate_limited_error() = runTest {
+        val vm = viewModel(loader = { throw httpException(429) })
+        advanceUntilIdle()
+        assertEquals(PreviewState.Error(ErrorReason.RateLimited), vm.state.value)
+    }
+
+    @Test
+    fun other_http_error_surfaces_unknown_error() = runTest {
+        val vm = viewModel(loader = { throw httpException(500) })
         advanceUntilIdle()
         assertEquals(PreviewState.Error(ErrorReason.Unknown), vm.state.value)
     }
@@ -204,4 +232,7 @@ class PreviewViewModelTest {
         assertTrue(vm.state.value is PreviewState.Ready)
         assertEquals(2, attempts)
     }
+
+    private fun httpException(code: Int): HttpException =
+        HttpException(Response.error<Any>(code, "".toResponseBody("text/plain".toMediaType())))
 }

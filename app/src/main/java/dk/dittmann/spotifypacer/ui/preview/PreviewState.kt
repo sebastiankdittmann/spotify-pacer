@@ -25,6 +25,8 @@ sealed interface PreviewState {
 
 enum class ErrorReason {
     Network,
+    Forbidden,
+    RateLimited,
     EmptyPool,
     SaveFailed,
     Unknown,
