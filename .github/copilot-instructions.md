@@ -100,6 +100,24 @@ Any PR that adds or changes a Compose UI **must** include screenshots in the PR 
 - Follow `.github/PULL_REQUEST_TEMPLATE.md` if present.
 - Never `--no-verify`, never force-push `main`.
 
+## Versioning
+
+Every PR that ships user-visible code must bump [`version.txt`](../version.txt) following [semver](https://semver.org). The bump is part of the PR — do not open a separate version PR.
+
+| Change | Bump | Examples |
+|---|---|---|
+| **Breaking** — anything that breaks an existing user's install or stored data (incompatible APK signing, schema migration without upgrade path, removed feature, redirect URI change, scope removal) | **MAJOR** | `1.4.2 → 2.0.0` |
+| **Feature** (`feat:`) | **MINOR** | `1.4.2 → 1.5.0` |
+| **Fix / chore / refactor / docs / test / perf** (`fix:`, `chore:`, …) | **PATCH** | `1.4.2 → 1.4.3` |
+
+Pure-internal PRs that produce no shippable change (CI tweaks that don't touch the app, README typos, doc-only edits) may skip the bump — call this out explicitly in the PR description.
+
+`versionCode` is derived automatically; minor and patch must each stay below 100. See [`docs/RELEASING.md`](../docs/RELEASING.md).
+
+### Manual approval gate
+
+The release workflow runs against the `Development` GitHub environment. **Major and minor releases require a human to approve the deployment** before the APK is built and published; patch releases run unattended. When the PR introduces a major or minor bump, mention in the PR description that the release will require manual approval after merge.
+
 ## When stuck
 
 If a change requires guessing at the user's intent, stop and ask. Don't invent requirements.
