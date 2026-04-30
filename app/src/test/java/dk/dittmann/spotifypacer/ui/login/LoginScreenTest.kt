@@ -26,7 +26,7 @@ class LoginScreenTest {
             MaterialTheme { LoginScreen(state = LoginState.Idle, onSignIn = {}, onSignedIn = {}) }
         }
 
-        composeRule.onNodeWithText(SIGN_IN_LABEL).assertIsDisplayed().assertIsEnabled()
+        composeRule.onNodeWithText("Sign in with Spotify").assertIsDisplayed().assertIsEnabled()
     }
 
     @Test
@@ -37,8 +37,8 @@ class LoginScreenTest {
             }
         }
 
-        composeRule.onNodeWithText(SIGN_IN_LABEL).assertIsDisplayed().assertIsNotEnabled()
-        composeRule.onNodeWithContentDescription(LOADING_DESCRIPTION).assertIsDisplayed()
+        composeRule.onNodeWithText("Sign in with Spotify").assertIsDisplayed().assertIsNotEnabled()
+        composeRule.onNodeWithContentDescription("Signing you in").assertIsDisplayed()
     }
 
     @Test
@@ -54,7 +54,7 @@ class LoginScreenTest {
         }
 
         composeRule.onNodeWithText("Couldn't reach Spotify.").assertIsDisplayed()
-        composeRule.onNodeWithText(SIGN_IN_LABEL).assertIsEnabled()
+        composeRule.onNodeWithText("Sign in with Spotify").assertIsEnabled()
     }
 
     @Test
@@ -66,7 +66,7 @@ class LoginScreenTest {
             }
         }
 
-        composeRule.onNodeWithText(SIGN_IN_LABEL).performClick()
+        composeRule.onNodeWithText("Sign in with Spotify").performClick()
 
         assertEquals(1, clicks)
     }

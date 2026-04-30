@@ -1,8 +1,5 @@
 package dk.dittmann.spotifypacer.ui.login
 
-import dk.dittmann.spotifypacer.auth.AuthApiFactory
-import dk.dittmann.spotifypacer.auth.AuthService
-import dk.dittmann.spotifypacer.auth.TokenStore
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
@@ -10,27 +7,20 @@ import org.junit.Test
 
 class LoginViewModelTest {
 
-    private lateinit var authService: AuthService
+    private var token: String? = null
     private var launches = 0
     private var launchError: Throwable? = null
 
     @Before
     fun setup() {
-        authService =
-            AuthService(
-                clientId = "client",
-                redirectUri = "spotifypacer://callback",
-                tokenStore = FakeTokenStore(),
-                api = AuthApiFactory.create(),
-            )
+        token = null
         launches = 0
         launchError = null
     }
 
     @Test
     fun initial_state_is_idle() {
-        val vm = newViewModel()
-        assertEquals(LoginState.Idle, vm.state.value)
+        assertEquals(LoginState.Idle, newViewModel().state.value)
     }
 
     @Test
@@ -59,8 +49,7 @@ class LoginViewModelTest {
     fun refreshAuthState_marks_success_when_access_token_present() {
         val vm = newViewModel()
         vm.onSignInClicked()
-        // Simulate successful redirect: AuthService now holds a valid access token.
-        injectAccessToken(authService)
+        token = "fresh-token"
 
         vm.refreshAuthState()
 
@@ -92,39 +81,10 @@ class LoginViewModelTest {
 
     private fun newViewModel(): LoginViewModel =
         LoginViewModel(
-            authService = authService,
+            accessTokenSource = { token },
             launcher = {
                 launches++
                 launchError?.let { throw it }
             },
         )
-
-    /**
-     * Sets a valid access token on the AuthService via reflection — the property is private and
-     * normally written by the OAuth callback. Test-only shortcut.
-     */
-    private fun injectAccessToken(service: AuthService) {
-        val tokenField =
-            AuthService::class.java.getDeclaredField("accessToken").apply { isAccessible = true }
-        val expiryField =
-            AuthService::class.java.getDeclaredField("accessTokenExpiresAt").apply {
-                isAccessible = true
-            }
-        tokenField.set(service, "fresh-token")
-        expiryField.set(service, Long.MAX_VALUE)
-    }
-
-    private class FakeTokenStore : TokenStore {
-        private var token: String? = null
-
-        override fun saveRefreshToken(token: String) {
-            this.token = token
-        }
-
-        override fun readRefreshToken(): String? = token
-
-        override fun clear() {
-            token = null
-        }
-    }
 }

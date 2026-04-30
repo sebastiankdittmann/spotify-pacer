@@ -14,12 +14,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
-
-internal const val SIGN_IN_LABEL = "Sign in with Spotify"
-internal const val LOADING_DESCRIPTION = "Signing you in"
+import dk.dittmann.spotifypacer.R
 
 @Composable
 fun LoginScreen(
@@ -27,6 +26,7 @@ fun LoginScreen(
     onSignIn: () -> Unit,
     onSignedIn: () -> Unit,
     modifier: Modifier = Modifier,
+    loadingIndicator: @Composable () -> Unit = { DefaultLoadingIndicator() },
 ) {
     LaunchedEffect(state) { if (state is LoginState.Success) onSignedIn() }
 
@@ -35,23 +35,26 @@ fun LoginScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        Text(text = "spotify-pacer", style = MaterialTheme.typography.headlineMedium)
+        Text(
+            text = stringResource(R.string.app_name),
+            style = MaterialTheme.typography.headlineMedium,
+        )
         Spacer(Modifier.height(8.dp))
         Text(
-            text = "Build a playlist paced to your run.",
+            text = stringResource(R.string.login_tagline),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
         Spacer(Modifier.height(32.dp))
 
-        Button(onClick = onSignIn, enabled = state !is LoginState.Loading) { Text(SIGN_IN_LABEL) }
+        Button(onClick = onSignIn, enabled = state !is LoginState.Loading) {
+            Text(stringResource(R.string.login_sign_in_button))
+        }
 
         when (state) {
             is LoginState.Loading -> {
                 Spacer(Modifier.height(24.dp))
-                CircularProgressIndicator(
-                    modifier = Modifier.semantics { contentDescription = LOADING_DESCRIPTION }
-                )
+                loadingIndicator()
             }
             is LoginState.Error -> {
                 Spacer(Modifier.height(16.dp))
@@ -60,4 +63,10 @@ fun LoginScreen(
             else -> Unit
         }
     }
+}
+
+@Composable
+private fun DefaultLoadingIndicator() {
+    val description = stringResource(R.string.login_loading_description)
+    CircularProgressIndicator(modifier = Modifier.semantics { contentDescription = description })
 }

@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Spotify Pacer</string>
+    <string name="login_tagline">Build a playlist paced to your run.</string>
+    <string name="login_sign_in_button">Sign in with Spotify</string>
+    <string name="login_loading_description">Signing you in</string>
 </resources>
+

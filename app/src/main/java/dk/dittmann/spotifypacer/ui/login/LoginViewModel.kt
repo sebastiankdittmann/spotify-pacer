@@ -9,9 +9,19 @@ import kotlinx.coroutines.flow.asStateFlow
 /**
  * Drives the login screen. Owns the screen state but delegates the actual sign-in launch to a
  * [SignInLauncher] so the auth flow's Activity dependency stays out of the ViewModel.
+ *
+ * The auth dependency is a small token-snapshot lambda so tests don't need to reach into
+ * [AuthService] internals.
  */
-class LoginViewModel(private val authService: AuthService, private val launcher: SignInLauncher) :
-    ViewModel() {
+class LoginViewModel(
+    private val accessTokenSource: () -> String?,
+    private val launcher: SignInLauncher,
+) : ViewModel() {
+
+    constructor(
+        authService: AuthService,
+        launcher: SignInLauncher,
+    ) : this(accessTokenSource = authService::currentAccessToken, launcher = launcher)
 
     private val _state = MutableStateFlow<LoginState>(LoginState.Idle)
     val state: StateFlow<LoginState> = _state.asStateFlow()
@@ -27,7 +37,7 @@ class LoginViewModel(private val authService: AuthService, private val launcher:
      * redirect has either completed (token present) or been cancelled (still loading, no token).
      */
     fun refreshAuthState() {
-        if (authService.currentAccessToken() != null) {
+        if (accessTokenSource() != null) {
             _state.value = LoginState.Success
             return
         }
