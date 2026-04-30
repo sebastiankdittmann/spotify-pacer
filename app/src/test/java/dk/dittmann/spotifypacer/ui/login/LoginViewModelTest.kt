@@ -1,21 +1,39 @@
 package dk.dittmann.spotifypacer.ui.login
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
+import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class LoginViewModelTest {
 
     private var token: String? = null
     private var launches = 0
     private var launchError: Throwable? = null
+    private val authState = MutableStateFlow(false)
 
     @Before
     fun setup() {
+        Dispatchers.setMain(UnconfinedTestDispatcher())
         token = null
         launches = 0
         launchError = null
+        authState.value = false
+    }
+
+    @After
+    fun tearDown() {
+        Dispatchers.resetMain()
     }
 
     @Test
@@ -79,12 +97,33 @@ class LoginViewModelTest {
         assertEquals(errorBefore, vm.state.value)
     }
 
-    private fun newViewModel(): LoginViewModel =
+    @Test
+    fun authStateChanges_flip_loading_to_success_when_authenticated() {
+        val vm = newViewModel(authStateChanges = authState)
+        vm.onSignInClicked()
+        assertEquals(LoginState.Loading, vm.state.value)
+
+        authState.value = true
+
+        assertEquals(LoginState.Success, vm.state.value)
+    }
+
+    @Test
+    fun authStateChanges_emitting_false_does_not_change_state() {
+        val vm = newViewModel(authStateChanges = authState)
+
+        authState.value = false
+
+        assertEquals(LoginState.Idle, vm.state.value)
+    }
+
+    private fun newViewModel(authStateChanges: Flow<Boolean> = emptyFlow()): LoginViewModel =
         LoginViewModel(
             accessTokenSource = { token },
             launcher = {
                 launches++
                 launchError?.let { throw it }
             },
+            authStateChanges = authStateChanges,
         )
 }

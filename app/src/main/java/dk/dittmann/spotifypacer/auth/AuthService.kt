@@ -2,6 +2,9 @@ package dk.dittmann.spotifypacer.auth
 
 import java.security.SecureRandom
 import java.util.UUID
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 
@@ -19,6 +22,9 @@ class AuthService(
     @Volatile private var accessToken: String? = null
     @Volatile private var accessTokenExpiresAt: Long = 0L
     private var pending: PendingAuth? = null
+
+    private val _isAuthenticated = MutableStateFlow(tokenStore.readRefreshToken() != null)
+    val isAuthenticated: StateFlow<Boolean> = _isAuthenticated.asStateFlow()
 
     fun prepareAuthorize(): HttpUrl {
         val verifier = PkceGenerator.generateCodeVerifier(random)
@@ -83,11 +89,13 @@ class AuthService(
         accessToken = null
         accessTokenExpiresAt = 0L
         pending = null
+        _isAuthenticated.value = false
     }
 
     private fun applyTokenResponse(response: TokenResponse) {
         accessToken = response.accessToken
         accessTokenExpiresAt = clock() + response.expiresIn * 1000L
+        _isAuthenticated.value = true
     }
 
     companion object {
