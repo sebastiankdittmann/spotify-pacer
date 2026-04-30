@@ -20,9 +20,9 @@ class RoutesTest {
                 strategy = PaceStrategy.DelayedExponential(k = 3.0),
             )
         val route = Routes.preview(config)
-        assertTrue(route.startsWith("${Routes.Preview}?${Routes.PreviewArgConfig}="))
+        assertTrue(route.startsWith("${Routes.Preview}/"))
 
-        val encoded = route.substringAfter("=")
+        val encoded = route.removePrefix("${Routes.Preview}/")
         val decoded = RunConfigArg.decode(android.net.Uri.decode(encoded)).toRunConfig()
         assertEquals(config.distanceKm, decoded.distanceKm, 0.0)
         assertEquals(config.targetTimeSec, decoded.targetTimeSec)

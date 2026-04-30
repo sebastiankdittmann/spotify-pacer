@@ -11,7 +11,10 @@ import kotlinx.coroutines.runBlocking
  */
 class AuthTokenBridge(private val authService: AuthService) : SpotifyTokenProvider {
 
+    private val refreshLock = Any()
+
     override fun currentAccessToken(): String? = authService.currentAccessToken()
 
-    override fun refreshAccessToken(): String = runBlocking { authService.refreshAccessToken() }
+    override fun refreshAccessToken(): String =
+        synchronized(refreshLock) { runBlocking { authService.refreshAccessToken() } }
 }

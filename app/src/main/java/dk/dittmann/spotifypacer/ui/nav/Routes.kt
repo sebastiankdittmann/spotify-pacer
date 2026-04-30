@@ -11,14 +11,13 @@ object Routes {
     const val Setup = "setup"
     const val Preview = "preview"
 
-    /** Query-string argument key on the [Preview] destination carrying a JSON-encoded config. */
+    /** Path-segment argument key on the [Preview] destination carrying a JSON-encoded config. */
     const val PreviewArgConfig = "config"
 
-    /** NavHost route pattern with optional config query arg. */
-    const val PreviewPattern = "$Preview?$PreviewArgConfig={$PreviewArgConfig}"
+    /** NavHost route pattern with the required config path argument. */
+    const val PreviewPattern = "$Preview/{$PreviewArgConfig}"
 
-    fun preview(config: RunConfig): String =
-        "$Preview?$PreviewArgConfig=${Uri.encode(RunConfigArg.encode(config))}"
+    fun preview(config: RunConfig): String = "$Preview/${Uri.encode(RunConfigArg.encode(config))}"
 }
 
 @Serializable

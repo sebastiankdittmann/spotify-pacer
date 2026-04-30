@@ -66,14 +66,7 @@ fun AppNavHost(
         }
         composable(
             route = Routes.PreviewPattern,
-            arguments =
-                listOf(
-                    navArgument(Routes.PreviewArgConfig) {
-                        type = NavType.StringType
-                        nullable = true
-                        defaultValue = null
-                    }
-                ),
+            arguments = listOf(navArgument(Routes.PreviewArgConfig) { type = NavType.StringType }),
         ) { backStackEntry ->
             val encoded = backStackEntry.arguments?.getString(Routes.PreviewArgConfig)
             val config =
