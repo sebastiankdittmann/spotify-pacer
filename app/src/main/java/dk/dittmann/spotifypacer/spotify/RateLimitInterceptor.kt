@@ -16,10 +16,12 @@ class RateLimitInterceptor(
         val response = chain.proceed(chain.request())
         if (response.code != 429) return response
 
-        val retryAfterSeconds = response.header("Retry-After")?.toLongOrNull() ?: 0L
-        val delayMs = (retryAfterSeconds * 1000L).coerceIn(0L, maxRetryDelayMs)
+        val retryAfterSeconds = response.header("Retry-After")?.toLongOrNull()
+        if (retryAfterSeconds == null || retryAfterSeconds <= 0L) return response
+
+        val delayMs = (retryAfterSeconds * 1000L).coerceAtMost(maxRetryDelayMs)
         response.close()
-        if (delayMs > 0L) sleeper(delayMs)
+        sleeper(delayMs)
         return chain.proceed(chain.request())
     }
 

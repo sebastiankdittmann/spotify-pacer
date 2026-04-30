@@ -191,6 +191,24 @@ class SpotifyApiTest {
     }
 
     @Test
+    fun rate_limit_429_without_retry_after_is_not_retried() = runTest {
+        val sleeps = mutableListOf<Long>()
+        val testApi =
+            buildApi(tokens = tokens, rateLimit = RateLimitInterceptor(sleeper = { sleeps += it }))
+
+        server.enqueue(MockResponse().setResponseCode(429))
+
+        try {
+            testApi.me()
+            org.junit.Assert.fail("Expected HttpException for unretried 429")
+        } catch (expected: retrofit2.HttpException) {
+            assertEquals(429, expected.code())
+        }
+        assertTrue(sleeps.isEmpty())
+        assertEquals(1, server.requestCount)
+    }
+
+    @Test
     fun unauthorized_401_triggers_one_refresh_and_retry() = runTest {
         var current: String? = "stale-token"
         val refreshes = mutableListOf<String>()
