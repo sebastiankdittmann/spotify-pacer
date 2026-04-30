@@ -16,8 +16,8 @@ class AuthService(
     private val stateGenerator: () -> String = { UUID.randomUUID().toString() },
 ) {
 
-    private var accessToken: String? = null
-    private var accessTokenExpiresAt: Long = 0L
+    @Volatile private var accessToken: String? = null
+    @Volatile private var accessTokenExpiresAt: Long = 0L
     private var pending: PendingAuth? = null
 
     fun prepareAuthorize(): HttpUrl {
