@@ -3,6 +3,8 @@
 [![Latest release](https://img.shields.io/github/v/release/sebastiankdittmann/spotify-pacer?label=release&sort=semver)](https://github.com/sebastiankdittmann/spotify-pacer/releases/latest)
 [![Release date](https://img.shields.io/github/release-date/sebastiankdittmann/spotify-pacer?label=released)](https://github.com/sebastiankdittmann/spotify-pacer/releases/latest)
 
+BPM data powered by [GetSongBPM](https://getsongbpm.com/).
+
 Android app that builds Spotify playlists paced to your run.
 
 You pick a **distance** and **target time**. You pick a **pace strategy** (constant, linear ramp, or delayed-exponential ramp). The app queries your Spotify library, selects tracks whose BPM matches the pace curve minute-by-minute, shows you the lineup, and — on your approval — saves it as a new playlist to your account.
