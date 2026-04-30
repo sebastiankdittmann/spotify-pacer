@@ -1,25 +1,33 @@
 package dk.dittmann.spotifypacer.ui.login
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 
 /**
- * Renders a determinate spinner so the screenshot is deterministic across hosts. The runtime
- * spinner stays indeterminate; this override is preview-only.
+ * Static placeholder for the spinner so the screenshot is deterministic across hosts. The runtime
+ * indicator stays indeterminate; this override is preview-only.
  */
 @Composable
 private fun PreviewLoadingIndicator() {
-    CircularProgressIndicator(
-        progress = { 0.4f },
-        modifier = Modifier.semantics { contentDescription = "Signing you in" },
+    Box(
+        modifier =
+            Modifier.size(40.dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.primary)
+                .semantics { contentDescription = "Signing you in" }
     )
 }
 
